@@ -1,0 +1,28 @@
+.vacations-page {
+    width: 100%;
+}
+
+.vacations-page .container {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+.vacations-page h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 32px 0;
+}
+
+@media (max-width: 768px) {
+    .vacations-page .container {
+        padding: 24px 16px;
+    }
+
+    .vacations-page h1 {
+        font-size: 24px;
+        margin-bottom: 24px;
+    }
+}

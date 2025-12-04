@@ -1,0 +1,35 @@
+.filter-bar {
+    margin-bottom: 24px;
+}
+
+.filter-bar .flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter-bar button {
+    background: #e5e7eb;
+    color: #374151;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-bar button.bg-blue-600 {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .filter-bar button {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+}

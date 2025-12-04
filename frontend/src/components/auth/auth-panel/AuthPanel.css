@@ -1,0 +1,189 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    overflow: auto;
+}
+
+.AuthFormWrapper {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    background: #ffffff;
+    overflow: hidden;
+    position: relative;
+}
+
+.AuthFormWrapper::before {
+    content: 'Sunny';
+    flex: 1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 120px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -2px;
+    position: relative;
+}
+
+.AuthFormWrapper::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 25%;
+    width: 350px;
+    height: 5px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255,255,255,0.6) 20%,
+        rgba(255,255,255,1) 50%,
+        rgba(255,255,255,0.6) 80%,
+        transparent 100%
+    );
+    border-radius: 3px;
+    filter: blur(1px);
+    transform: translateX(-5px) translateY(80px);
+    animation: underlineWave 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes underlineWave {
+    0%, 100% {
+        opacity: .8;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.AuthCard {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 80px;
+    max-width: 600px;
+    overflow: hidden;
+}
+
+.AuthCard h2 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 40px 0;
+}
+
+.AuthCard form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.AuthCard input {
+    width: 100%;
+    padding: 16px 18px;
+    font-size: 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1a202c;
+    transition: border-color .2s ease, box-shadow .2s ease;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.AuthCard input::placeholder {
+    color: #a0aec0;
+}
+
+.AuthCard input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+}
+
+.AuthCard button {
+    width: 100%;
+    padding: 16px 20px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #ffffff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity .2s ease, transform .1s ease;
+    margin-top: 8px;
+}
+
+.AuthCard button:hover:not(:disabled) {
+    opacity: .9;
+}
+
+.AuthCard button:active:not(:disabled) {
+    transform: scale(.98);
+}
+
+.AuthCard button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.error-box {
+    background: #fee;
+    color: #c53030;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    border-left: 4px solid #fc8181;
+    margin-top: -12px;
+}
+
+.SwitchText {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 15px;
+    color: #4a5568;
+}
+
+.SwitchText a {
+    color: #667eea;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color .2s ease;
+}
+
+.SwitchText a:hover {
+    color: #764ba2;
+    text-decoration: underline;
+}
+
+@media (max-width: 968px) {
+    .AuthFormWrapper::before,
+    .AuthFormWrapper::after {
+        display: none;
+    }
+    
+    .AuthCard {
+        max-width: 100%;
+        padding: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .AuthCard {
+        padding: 30px 24px;
+    }
+
+    .AuthCard h2 {
+        font-size: 28px;
+        margin-bottom: 32px;
+    }
+
+    .AuthCard input,
+    .AuthCard button {
+        padding: 14px 16px;
+        font-size: 15px;
+    }
+}

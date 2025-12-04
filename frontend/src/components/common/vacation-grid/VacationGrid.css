@@ -1,0 +1,32 @@
+.vacation-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+    will-change: auto;
+}
+
+@media (min-width: 640px) {
+    .vacation-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .vacation-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1280px) {
+    .vacation-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.vacation-grid .text-center {
+    grid-column: 1 / -1;
+    padding: 48px 24px;
+    color: #6b7280;
+    font-size: 16px;
+}

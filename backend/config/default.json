@@ -1,0 +1,31 @@
+{
+    "app": {
+        "port": 3000,
+        "name": "sunnydb dev",
+        "secret": "MySecret",
+        "jwtSecret": "JwtSecret"
+    },
+    "db": {
+        "host": "localhost",
+        "port": 3306,
+        "username": "root",
+        "password": "",
+        "database": "sunnydb"
+    },
+    "s3": {
+        "bucket": "images.sunnydb.com",
+        "connection": {
+            "endpoint": "http://127.0.0.1:4566",
+            "region": "us-east-1",
+            "credentials": {
+                "accessKeyId": "test",
+                "secretAccessKey": "test"
+            },
+            "forcePathStyle": true
+        }
+    },
+    "io": {
+        "host": "localhost",
+        "port": 3004
+    }
+}
