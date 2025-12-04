@@ -22,10 +22,9 @@ Password: 123456
 
 👤 3. Regular User Login
 Email: tomer10@mail.com
-
 Password: 123456
-Email: gil5@mail.com
 
+Email: gil5@mail.com
 Password: 123456
 
 📁 4. LocalStack S3 Bucket
