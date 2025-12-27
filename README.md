@@ -1,5 +1,5 @@
 # 🌴 Holidex – Smart Vacations Platform
-![coding](https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif)
+![travel-code](https://media.giphy.com/media/26tn33aiTi1jkl6H6/giphy.gif)
 
 🚀 Project Setup & Run Guide
 
