@@ -1,5 +1,4 @@
 # 🌴 Holidex – Smart Vacations Platform
-![travel-code](https://media.giphy.com/media/26tn33aiTi1jkl6H6/giphy.gif)
 
 🚀 Project Setup & Run Guide
 
@@ -65,3 +64,5 @@ MySQL is seeded
 S3 bucket is created and pre-filled with images
 Backend is connected to LocalStack
 Frontend loads all images from S3 correctly
+
+![vacation](https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif)
