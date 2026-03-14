@@ -27,15 +27,23 @@ export default function VacationForm({ vacation, onSubmit, onCancel }: VacationF
     const startDateValue = watch("startDate");
 
     useEffect(() => {
-        if (!vacation) return
-        reset(vacation)
-        
+        if (!vacation) return;
+        reset(vacation);
+
         if (vacation.imageUrl) {
             setPreviewUrl(vacation.imageUrl);
             setFileName("Current image");
             setHasExistingImage(true);
         }
-    }, [vacation])
+    }, [vacation, reset]);
+
+    useEffect(() => {
+        return () => {
+            if (previewUrl?.startsWith("blob:")) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
 
     const submitHandler = async (data: VacationDraft) => {
         const imageFileList = data.image as unknown as FileList;

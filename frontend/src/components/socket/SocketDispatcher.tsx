@@ -8,6 +8,13 @@ import SocketDispatcherContext from "./SocketDispatcherContext";
 import { addLike, removeLike } from "../../redux/likes-slice";
 import AuthContext from "../auth/auth/AuthContext";
 
+type LikesUpdatedPayload = {
+    clientId: string;
+    change: 1 | -1;
+    vacationId: string;
+    userId: string;
+};
+
 export default function SocketDispatcher(props: PropsWithChildren) {
     const dispatch = useAppDispatcher();
     const [clientId] = useState<string>(v4());
@@ -17,7 +24,7 @@ export default function SocketDispatcher(props: PropsWithChildren) {
     useEffect(() => {
         const socket = io(`${import.meta.env.VITE_IO_SERVER_URL}`);
 
-        socket.on(SocketMessages.LikesUpdated, (payload) => {
+        socket.on(SocketMessages.LikesUpdated, (payload: LikesUpdatedPayload) => {
             // Ignore events that originated from this same device (prevents double UI updates in this tab).
             if (payload.clientId === clientId) return;
 
@@ -47,7 +54,7 @@ export default function SocketDispatcher(props: PropsWithChildren) {
         });
 
         return () => { socket.disconnect(); };
-    }, [clientId, dispatch]);
+    }, [auth?.id, clientId, dispatch]);
 
     const { children } = props;
 

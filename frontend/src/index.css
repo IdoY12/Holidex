@@ -4,6 +4,15 @@
     box-sizing: border-box;
 }
 
+:root {
+    --color-bg: #f5f5f7;
+    --color-text: #111827;
+    --color-muted: #6b7280;
+    --color-primary: #667eea;
+    --color-primary-strong: #764ba2;
+    --radius-md: 8px;
+}
+
 html {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
@@ -15,18 +24,25 @@ body {
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: #f5f5f7;
-    color: #111827;
+    background: var(--color-bg);
+    color: var(--color-text);
     line-height: 1.5;
     overflow-x: hidden;
     width: 100%;
 }
 
-*,
-*::before,
-*::after {
-    transition: none !important;
-    animation: none !important;
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
 button:not(:disabled) {

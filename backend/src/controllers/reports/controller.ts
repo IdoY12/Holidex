@@ -3,6 +3,12 @@ import Like from "../../models/Like";
 import Vacation from "../../models/Vacation";
 import sequelize from "../../db/sequelize";
 
+type VacationLikesRow = {
+    id: string;
+    destination: string;
+    likesCount: string;
+};
+
 export async function getLikes(req: Request, res: Response, next: NextFunction) {
     try {
         const vacations = await Vacation.findAll({
@@ -21,10 +27,12 @@ export async function getLikes(req: Request, res: Response, next: NextFunction) 
             raw: true
         });
 
-        res.json(vacations.map((v: any) => ({
+        const vacationRows = vacations as unknown as VacationLikesRow[];
+
+        res.json(vacationRows.map((v) => ({
             id: v.id,
             destination: v.destination,
-            likes: parseInt(v.likesCount) || 0
+            likes: Number.parseInt(v.likesCount, 10) || 0
         })));
     } catch (e) {
         next(e)

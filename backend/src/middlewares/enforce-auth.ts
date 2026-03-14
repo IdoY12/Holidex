@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 import config from 'config'
-import User from "../models/User";
-import Joi from "joi";
+
+type JwtPayload = {
+    id: string;
+};
 
 declare global {
     namespace Express {
@@ -37,9 +39,8 @@ export default function enforceAuth(req: Request, res: Response, next: NextFunct
     })
 
     try {
-        const user = verify(jwt, jwtSecret) as User
+        const user = verify(jwt, jwtSecret) as JwtPayload
         req.userId = user.id
-        console.log(user)
         next()
 
     } catch (e) {

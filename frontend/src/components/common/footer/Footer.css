@@ -1,16 +1,30 @@
 .Footer {
     background: #ffffff;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
-    padding: 24px;
+    padding: 16px 24px;
     text-align: center;
-    color: #6b7280;
+    color: var(--color-muted, #6b7280);
     font-size: 14px;
     margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.Footer__divider {
+    color: #d1d5db;
+}
+
+@media (max-width: 480px) {
+    .Footer__divider {
+        display: none;
+    }
 }
 
 @media (max-width: 768px) {
     .Footer {
-        padding: 16px;
         font-size: 12px;
     }
 }

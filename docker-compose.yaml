@@ -1,6 +1,3 @@
-# here i tell docker which version docker-compose we coding (writing)
-version: '3.8'
-
 # here i describe services e.g. here im going to list containers that i want to build
 # each service, actually describe a docker run command
 services:
@@ -17,11 +14,11 @@ services:
     # image: idoyahav/sunnydb-db:1.0.0     <--   pull (download) existing image from Docker Hub
     build: ./database #   <-- build the image from database directory
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1" ] # <-- Docker runs this inside the container to check if MySQL is responsive
-      interval: 1m30s  # <-- how often to run the healthcheck (every 1.5 minutes)
-      timeout: 30s   # <-- how long to wait for a response before marking it as "unhealthy"
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ] # <-- Docker runs this inside the container to check if MySQL is responsive
+      interval: 10s  # <-- how often to run the healthcheck (every 10 seconds)
+      timeout: 5s   # <-- how long to wait for a response before marking it as "unhealthy"
       retries: 5   # <-- how many times to retry before declaring the container as "unhealthy"
-      start_period: 30s  # <-- grace period before starting health checks (gives MySQL time to start)
+      start_period: 60s  # <-- grace period before starting health checks (gives MySQL time to start and load SQL file)
 
   # docker run --name sunnydb-backend -d -e NODE_ENV=docker  -p 3010:3000 idoyahav/sunnydb-backend:4.0.0
   backend:
@@ -64,4 +61,4 @@ services:
     container_name: sunny-io-compose
     build: ./io
     ports:
-    - "3004:3004"
+      - "3004:3004"

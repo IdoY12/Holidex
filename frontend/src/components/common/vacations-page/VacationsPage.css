@@ -16,6 +16,16 @@
     margin: 0 0 32px 0;
 }
 
+.vacations-page__load-error {
+    margin: 8px 0 20px 0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 14px;
+}
+
 @media (max-width: 768px) {
     .vacations-page .container {
         padding: 24px 16px;

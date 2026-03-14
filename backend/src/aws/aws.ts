@@ -1,5 +1,4 @@
 import { CreateBucketCommand, S3Client } from "@aws-sdk/client-s3"
-import { Upload } from "@aws-sdk/lib-storage"
 import config from "config"
 
 export const s3Config = config.get<AppConfig['s3']>('s3')
@@ -11,14 +10,12 @@ const s3Client = new S3Client({
 
 export async function createAppBucketIfNotExists() {
     try {
-        const result = await s3Client.send(
+        await s3Client.send(
             new CreateBucketCommand({
                 Bucket: s3Config.bucket
             })
         )
-        console.log(result)
-    } catch(e) {
-        console.log('bucket creation failed. silent exception, bucket already exists', e)
+    } catch (e) {
         throw e
     }
 }

@@ -4,18 +4,22 @@ import { NavLink, useNavigate } from "react-router-dom";
 import authService from "../../../services/auth";
 import AuthContext from "../auth/AuthContext";
 import type LoginModel from "../../../models/login";
-import "../auth-panel/AuthPanel.css"
+import "../auth-panel/AuthPanel.css";
 import useTitle from "../../../hooks/use-title";
+
+type JwtPayload = {
+    role?: string;
+};
 
 export default function Login() {
 
-    useTitle('Login')
+    useTitle("Login");
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-        setError
+        setError,
     } = useForm<LoginModel>();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,15 +33,14 @@ export default function Login() {
             const { jwt } = await authService.login(model);
             authContext?.newJwt(jwt);
 
-            const payload = JSON.parse(atob(jwt.split(".")[1]));
+            const payload = JSON.parse(atob(jwt.split(".")[1])) as JwtPayload;
             const role = payload.role;
 
             if (role === "admin") navigate("/admin");
             else navigate("/vacations");
 
-        } catch(e) {
+        } catch {
             setError("root", { message: "Email or password is incorrect" });
-            console.log(e)
         } finally {
             setIsSubmitting(false);
         }

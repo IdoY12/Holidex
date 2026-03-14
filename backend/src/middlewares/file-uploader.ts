@@ -18,8 +18,6 @@ export default async function fileUploader(req: Request, res: Response, next: Ne
     try {
         if(!req.files) return next()
         if(!req.files.image) return next()
-        
-        console.log(req.files)
 
         const {mimetype, data, name } = req.files.image as UploadedFile
         
@@ -34,8 +32,12 @@ export default async function fileUploader(req: Request, res: Response, next: Ne
         })
         
         const result = await upload.done()
-        let imageKey = result.Key
-        req.imageUrl = imageKey
+        const imageKey = result.Key;
+        if (!imageKey) {
+            return next({ status: 500, message: "image upload failed" });
+        }
+
+        req.imageUrl = imageKey;
         next()
     } catch(e) {
         next(e)
