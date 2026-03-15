@@ -2,10 +2,6 @@ services:
   database:
     container_name: holidex-database
     build: ./database
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "1"
-      MYSQL_DATABASE: sunnydb
-      MYSQL_TCP_PORT: "3306"
     ports:
       - "3309:3306"
     healthcheck:
@@ -18,9 +14,6 @@ services:
   localstack:
     container_name: holidex-localstack
     build: ./localstack
-    environment:
-      SERVICES: s3
-      DEBUG: "1"
     ports:
       - "4566:4566"
     volumes:
@@ -38,8 +31,6 @@ services:
     build: ./backend
     environment:
       NODE_ENV: compose
-      JWT_SECRET: jwtSecret
-      APP_SECRET: secret
     ports:
       - "3020:3000"
     depends_on:

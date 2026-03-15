@@ -1,4 +1,8 @@
 {
+    "app": {
+        "secret": "secret",
+        "jwtSecret": "jwtSecret"
+    },
     "db": {
         "host": "database"
     },

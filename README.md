@@ -34,6 +34,7 @@ Notes:
 
 - The backend connects to service hostnames `database`, `localstack`, and `io` in containerized compose-mode config.
 - For local npm mode, backend defaults to localhost endpoints and can be overridden with `NODE_CONFIG`.
+- Database and LocalStack default container environment values are baked into `database/Dockerfile` and `localstack/Dockerfile`.
 
 ## Prerequisites
 
@@ -76,15 +77,10 @@ docker build -t holidex-localstack ./localstack
 
 # If port 3306 is occupied on your host, use 3308:3306 and NODE_CONFIG override below.
 docker run --name database-local \
-  -e MYSQL_ALLOW_EMPTY_PASSWORD=1 \
-  -e MYSQL_DATABASE=sunnydb \
-  -e MYSQL_TCP_PORT=3306 \
   -p 3308:3306 \
   -d holidex-database
 
 docker run --name localstack-local \
-  -e SERVICES=s3 \
-  -e DEBUG=1 \
   -p 4566:4566 \
   -d holidex-localstack
 ```
@@ -170,16 +166,11 @@ Use the exact aliases below so backend DNS resolution matches config:
 ```bash
 docker run --name holidex-run-database \
   --network holidex-net --network-alias database \
-  -e MYSQL_ALLOW_EMPTY_PASSWORD=1 \
-  -e MYSQL_DATABASE=sunnydb \
-  -e MYSQL_TCP_PORT=3306 \
   -p 3309:3306 \
   -d holidex-database
 
 docker run --name holidex-run-localstack \
   --network holidex-net --network-alias localstack \
-  -e SERVICES=s3 \
-  -e DEBUG=1 \
   -p 4566:4566 \
   -d holidex-localstack
 
@@ -192,8 +183,6 @@ docker run --name holidex-run-io \
 docker run --name holidex-run-backend \
   --network holidex-net \
   -e NODE_ENV=compose \
-  -e JWT_SECRET=jwtSecret \
-  -e APP_SECRET=secret \
   -p 3020:3000 \
   -d holidex-backend
 
@@ -240,6 +229,7 @@ Each container runs without a shared Docker network. Services communicate throug
 
 - On macOS and Windows, `host.docker.internal` resolves automatically.
 - On Linux, add `--add-host=host.docker.internal:host-gateway` to each `docker run` command (included below).
+- Backend connection targets and app auth secrets for this mode are configured in `backend/config/docker.json`.
 
 #### 1) Build images
 
@@ -257,17 +247,12 @@ docker build -t holidex-frontend -f ./frontend/Dockerfile.compose ./frontend
 # 1. database
 docker run --name holidex-standalone-database \
   --add-host=host.docker.internal:host-gateway \
-  -e MYSQL_ALLOW_EMPTY_PASSWORD=1 \
-  -e MYSQL_DATABASE=sunnydb \
-  -e MYSQL_TCP_PORT=3306 \
   -p 3309:3306 \
   -d holidex-database
 
 # 2. localstack
 docker run --name holidex-standalone-localstack \
   --add-host=host.docker.internal:host-gateway \
-  -e SERVICES=s3 \
-  -e DEBUG=1 \
   -p 4566:4566 \
   -d holidex-localstack
 
@@ -281,9 +266,6 @@ docker run --name holidex-standalone-io \
 docker run --name holidex-standalone-backend \
   --add-host=host.docker.internal:host-gateway \
   -e NODE_ENV=docker \
-  -e APP_SECRET=secret \
-  -e JWT_SECRET=jwtSecret \
-  -e NODE_CONFIG='{"db":{"port":3309},"s3":{"connection":{"endpoint":"http://host.docker.internal:4566"}}}' \
   -p 3020:3000 \
   -d holidex-backend
 
@@ -396,15 +378,15 @@ Backend/runtime variables:
 
 | Variable | Used By | Description | Example |
 | --- | --- | --- | --- |
-| `APP_SECRET` | backend | HMAC secret for password hashing | `secret` |
-| `JWT_SECRET` | backend | JWT signing secret | `jwtSecret` |
 | `NODE_ENV` | backend | Config profile (`default`, `compose`, `docker`, `production`) | `compose` |
 | `NODE_CONFIG` | backend (optional) | Inline override JSON for local npm mode | `{"db":{"host":"localhost","port":3308}}` |
-| `SERVICES` | localstack | Enabled AWS emulated services | `s3` |
-| `DEBUG` | localstack | LocalStack debug logging | `1` |
-| `MYSQL_ALLOW_EMPTY_PASSWORD` | database | Allow empty MySQL root password | `1` |
-| `MYSQL_DATABASE` | database | Database initialized on startup | `sunnydb` |
-| `MYSQL_TCP_PORT` | database | Internal MySQL container port | `3306` |
+| `APP_SECRET` | backend (optional override) | Overrides `app.secret` from config files | `secret` |
+| `JWT_SECRET` | backend (optional override) | Overrides `app.jwtSecret` from config files | `jwtSecret` |
+| `SERVICES` | localstack (optional override) | Overrides LocalStack enabled services (default baked in Dockerfile) | `s3` |
+| `DEBUG` | localstack (optional override) | Overrides LocalStack debug level (default baked in Dockerfile) | `1` |
+| `MYSQL_ALLOW_EMPTY_PASSWORD` | database (optional override) | Overrides MySQL empty password mode (default baked in Dockerfile) | `1` |
+| `MYSQL_DATABASE` | database (optional override) | Overrides initial DB name (default baked in Dockerfile) | `sunnydb` |
+| `MYSQL_TCP_PORT` | database (optional override) | Overrides internal MySQL port (default baked in Dockerfile) | `3306` |
 
 ## Ports
 
