@@ -1,64 +1,64 @@
-# here i describe services e.g. here im going to list containers that i want to build
-# each service, actually describe a docker run command
 services:
-
-  # docker run --name sunnydb-db -d -e MYSQL_ALLOW_EMPTY_PASSWORD=1 -e MYSQL_DATABASE=sunnydb -e MYSQL_TCP_PORT=3306 -p 3308:3306 idoyahav/sunnydb-db:1.0.0
   database:
-    container_name: sunny-db-compose
+    container_name: holidex-database
+    build: ./database
     environment:
-      - MYSQL_ALLOW_EMPTY_PASSWORD=1
-      - MYSQL_DATABASE=sunnydb
-      - MYSQL_TCP_PORT=3306
+      MYSQL_ALLOW_EMPTY_PASSWORD: "1"
+      MYSQL_DATABASE: sunnydb
+      MYSQL_TCP_PORT: "3306"
     ports:
       - "3309:3306"
-    # image: idoyahav/sunnydb-db:1.0.0     <--   pull (download) existing image from Docker Hub
-    build: ./database #   <-- build the image from database directory
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ] # <-- Docker runs this inside the container to check if MySQL is responsive
-      interval: 10s  # <-- how often to run the healthcheck (every 10 seconds)
-      timeout: 5s   # <-- how long to wait for a response before marking it as "unhealthy"
-      retries: 5   # <-- how many times to retry before declaring the container as "unhealthy"
-      start_period: 60s  # <-- grace period before starting health checks (gives MySQL time to start and load SQL file)
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
 
-  # docker run --name sunnydb-backend -d -e NODE_ENV=docker  -p 3010:3000 idoyahav/sunnydb-backend:4.0.0
-  backend:
-    container_name: sunny-backend-compose
-    environment:
-      - NODE_ENV=compose
-      - JWT_SECRET=jwtSecret
-      - APP_SECRET=secret
-    ports:
-      - "3020:3000"
-    build: ./backend
-    depends_on:
-      database:
-        condition: service_healthy # <-- here I wait until the database passes its healthcheck and is ready to accept connections
-
-  # docker run --name sunnydb-frontend -d -p 3011:5173 idoyahav/sunnydb-frontend:1.0.1
-  frontend:
-    container_name: sunny-frontend-compose
-    ports:
-      - 3012:80 # <-- mapping Nginx's internal port 80 to 3011 on the host, so the frontend is accessible from outside the container
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.compose
-
-  # chmod +x /Users/idoyahav/Desktop/git/45782-1-project-3/localstack/init/ready.d/s3-init.sh
-  # docker run --name localstack -d --rm -it -p 4566:4566 -e SERVICES=s3 -e DEBUG=1 -v "/Users/idoyahav/Desktop/git/45782-1-project-3/localstack/init/ready.d":/etc/localstack/init/ready.d localstack/localstack
   localstack:
-    container_name: sunny-localstack-compose
-    image: localstack/localstack
-    ports:
-      - 4566:4566
+    container_name: holidex-localstack
+    build: ./localstack
     environment:
-      - SERVICES=s3
-      - DEBUG=1
+      SERVICES: s3
+      DEBUG: "1"
+    ports:
+      - "4566:4566"
     volumes:
       - ./localstack/init:/etc/localstack/init
       - ./localstack/data:/var/lib/localstack
 
   io:
-    container_name: sunny-io-compose
+    container_name: holidex-io
     build: ./io
     ports:
       - "3004:3004"
+
+  backend:
+    container_name: holidex-backend
+    build: ./backend
+    environment:
+      NODE_ENV: compose
+      JWT_SECRET: jwtSecret
+      APP_SECRET: secret
+    ports:
+      - "3020:3000"
+    depends_on:
+      database:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+      io:
+        condition: service_started
+
+  frontend:
+    container_name: holidex-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.compose
+    ports:
+      - "3012:80"
+    depends_on:
+      backend:
+        condition: service_started
+      io:
+        condition: service_started
