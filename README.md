@@ -145,6 +145,8 @@ curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/reports/csv \
 
 ## Run Mode 2: Individual Containers (`docker run`)
 
+### Option A - With a shared Docker network (containers talk by hostname)
+
 ### 1) Build images
 
 ```bash
@@ -230,6 +232,103 @@ curl -s http://localhost:3020/likes -H "Authorization: Bearer $JWT"
 curl -s -X DELETE "http://localhost:3020/likes/$VACATION_ID" \
   -H "Authorization: Bearer $JWT" -H "x-client-id:docker-run-check"
 curl -s http://localhost:3020/reports -H "Authorization: Bearer $JWT"
+```
+
+### Option B - Fully standalone (no shared network, containers talk via host)
+
+Each container runs without a shared Docker network. Services communicate through the host machine using `host.docker.internal:<published_port>`.
+
+- On macOS and Windows, `host.docker.internal` resolves automatically.
+- On Linux, add `--add-host=host.docker.internal:host-gateway` to each `docker run` command (included below).
+
+#### 1) Build images
+
+```bash
+docker build -t holidex-database ./database
+docker build -t holidex-localstack ./localstack
+docker build -t holidex-io ./io
+docker build -t holidex-backend ./backend
+docker build -t holidex-frontend -f ./frontend/Dockerfile.compose ./frontend
+```
+
+#### 2) Run services (no `--network`)
+
+```bash
+# 1. database
+docker run --name holidex-standalone-database \
+  --add-host=host.docker.internal:host-gateway \
+  -e MYSQL_ALLOW_EMPTY_PASSWORD=1 \
+  -e MYSQL_DATABASE=sunnydb \
+  -e MYSQL_TCP_PORT=3306 \
+  -p 3309:3306 \
+  -d holidex-database
+
+# 2. localstack
+docker run --name holidex-standalone-localstack \
+  --add-host=host.docker.internal:host-gateway \
+  -e SERVICES=s3 \
+  -e DEBUG=1 \
+  -p 4566:4566 \
+  -d holidex-localstack
+
+# 3. io
+docker run --name holidex-standalone-io \
+  --add-host=host.docker.internal:host-gateway \
+  -p 3004:3004 \
+  -d holidex-io
+
+# 4. backend (after database and localstack are ready)
+docker run --name holidex-standalone-backend \
+  --add-host=host.docker.internal:host-gateway \
+  -e NODE_ENV=docker \
+  -e APP_SECRET=secret \
+  -e JWT_SECRET=jwtSecret \
+  -e NODE_CONFIG='{"db":{"port":3309},"s3":{"connection":{"endpoint":"http://host.docker.internal:4566"}}}' \
+  -p 3020:3000 \
+  -d holidex-backend
+
+# 5. frontend
+docker run --name holidex-standalone-frontend \
+  --add-host=host.docker.internal:host-gateway \
+  -p 3012:80 \
+  -d holidex-frontend
+```
+
+#### 3) Verify standalone mode end-to-end
+
+```bash
+docker logs --tail=50 holidex-standalone-database
+docker logs --tail=50 holidex-standalone-localstack
+docker logs --tail=50 holidex-standalone-io
+docker logs --tail=50 holidex-standalone-backend
+docker logs --tail=50 holidex-standalone-frontend
+
+curl -I http://localhost:3012
+curl -s 'http://localhost:3004/socket.io/?EIO=4&transport=polling'
+curl -s http://localhost:4566/_localstack/health
+
+EMAIL="standalone_$(date +%s)@example.com"
+JWT=$(curl -s -X POST http://localhost:3020/auth/signup \
+  -H 'Content-Type: application/json' \
+  -d "{\"firstName\":\"Standalone\",\"lastName\":\"Mode\",\"email\":\"$EMAIL\",\"password\":\"secret123\"}" \
+  | python3 -c 'import sys,json; print(json.load(sys.stdin)["jwt"])')
+
+VACATION_ID=$(curl -s http://localhost:3020/vacations \
+  -H "Authorization: Bearer $JWT" \
+  | python3 -c 'import sys,json; print(json.load(sys.stdin)[0]["id"])')
+
+curl -s -X POST "http://localhost:3020/likes/$VACATION_ID" \
+  -H "Authorization: Bearer $JWT" -H "x-client-id:standalone-check"
+curl -s http://localhost:3020/likes -H "Authorization: Bearer $JWT"
+curl -s -X DELETE "http://localhost:3020/likes/$VACATION_ID" \
+  -H "Authorization: Bearer $JWT" -H "x-client-id:standalone-check"
+curl -s http://localhost:3020/reports -H "Authorization: Bearer $JWT"
+```
+
+#### 4) Cleanup standalone containers
+
+```bash
+docker rm -f holidex-standalone-database holidex-standalone-localstack holidex-standalone-io holidex-standalone-backend holidex-standalone-frontend
 ```
 
 ## Run Mode 3: Docker Compose (Recommended)
